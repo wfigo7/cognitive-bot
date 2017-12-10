@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class CommonController {
 
+	@RequestMapping("/")
+	@ResponseBody
+	String home() {
+		return "This service is responsible for the back end processing of the line bot";
+	}
+	
 	@RequestMapping("/Hello")
 	@ResponseBody
 	String hello() {
