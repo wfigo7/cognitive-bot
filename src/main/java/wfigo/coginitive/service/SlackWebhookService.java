@@ -1,15 +1,13 @@
 package wfigo.coginitive.service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.Consts;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,25 +22,21 @@ public class SlackWebhookService {
 
 	@Autowired
 	SlackWebHookProperties properties;
-	
+
 	public void sendTextMessage(String text) {
+
+		Gson gson = new Gson();
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("text", text);
 		
 		try {
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost post = new HttpPost(properties.getUrl());
-			Gson gson = new Gson();
-			Map<String, String> paramMap = new HashMap<String, String>();
-			paramMap.put("text", text);
-			StringEntity input = new StringEntity( gson.toJson(paramMap));
-			input.setContentType("application/json");
-			post.setEntity(input);
-			HttpResponse response = client.execute(post);
-			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			String line = "";
-			while ((line = rd.readLine()) != null) {
-				log.info(line);
-			}
-		} catch(Exception e) {
+			Request.Post(properties.getUrl())
+					.useExpectContinue()
+					.version(HttpVersion.HTTP_1_1)
+					.bodyString(gson.toJson(paramMap), ContentType.create("application/json", Consts.UTF_8))
+					.execute()
+					.returnContent().asBytes();
+		} catch (IOException e) {
 			log.error("Exception occurred.", e);
 		}
 	}
