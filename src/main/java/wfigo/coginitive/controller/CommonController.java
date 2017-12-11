@@ -1,12 +1,18 @@
 package wfigo.coginitive.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import wfigo.coginitive.service.SlackWebhookService;
+
 @Controller
 public class CommonController {
-
+	
+	@Autowired
+	SlackWebhookService slackService;
+	
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
@@ -16,7 +22,11 @@ public class CommonController {
 	@RequestMapping("/Hello")
 	@ResponseBody
 	String hello() {
-		return "Hello World!!";
+		
+		String message = "Hello World!";
+		slackService.sendTextMessage(message);
+		
+		return message;
 	}
 	
 }
