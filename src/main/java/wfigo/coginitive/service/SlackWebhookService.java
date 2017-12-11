@@ -2,15 +2,18 @@ package wfigo.coginitive.service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import wfigo.coginitive.SlackWebHookProperties;
@@ -27,9 +30,10 @@ public class SlackWebhookService {
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPost post = new HttpPost(properties.getUrl());
-			JSONObject json = new JSONObject();
-			json.put("text", text);
-			StringEntity input = new StringEntity( json.toString());
+			Gson gson = new Gson();
+			Map<String, String> paramMap = new HashMap<String, String>();
+			paramMap.put("text", text);
+			StringEntity input = new StringEntity( gson.toJson(paramMap));
 			input.setContentType("application/json");
 			post.setEntity(input);
 			HttpResponse response = client.execute(post);
