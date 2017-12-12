@@ -11,6 +11,7 @@ import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,10 @@ public class SlackWebhookService {
 	SlackWebHookProperties properties;
 
 	public void sendTextMessage(String text) {
+		
+		if(Strings.isNullOrEmpty(properties.getUrl())) {
+			return;
+		}
 
 		Gson gson = new Gson();
 		Map<String, String> paramMap = new HashMap<String, String>();
