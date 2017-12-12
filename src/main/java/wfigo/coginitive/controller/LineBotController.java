@@ -44,7 +44,7 @@ public class LineBotController {
 			String[] textArray = text.split(":");
 			if("w".equals(textArray[0])) {
 				String weather = weatherService.getWeather(textArray[1]);
-				if(Strings.isNullOrEmpty(weather)) {
+				if(!Strings.isNullOrEmpty(weather)) {
 					return new StickerMessage(weatherPackageId, weatherStickerMap.get(weather));
 				} else {
 					return new TextMessage("city not found.");
