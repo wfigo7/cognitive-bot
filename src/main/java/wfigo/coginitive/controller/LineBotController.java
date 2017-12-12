@@ -16,6 +16,7 @@ import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 
 import lombok.extern.slf4j.Slf4j;
+import wfigo.coginitive.service.OpenWeatherMapService;
 import wfigo.coginitive.service.SlackWebhookService;
 
 @LineMessageHandler
@@ -25,7 +26,12 @@ public class LineBotController {
 	@Autowired
 	SlackWebhookService slackService;
 
-	private Map<String, String> stickerMap = ImmutableMap.of("1", "13", "2", "175", "3", "191", "4", "276");
+	@Autowired
+	OpenWeatherMapService weatherService;
+	
+	private final Map<String, String> stickerMap = ImmutableMap.of("1", "13", "2", "175", "3", "191", "4", "276");
+	private final String weatherPackageId = "4";
+	private final Map<String, String> weatherStickerMap = ImmutableMap.of("Clear", "263", "Clouds", "264", "Rain", "266");
 
 	@EventMapping
 	public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
@@ -35,7 +41,11 @@ public class LineBotController {
 		// sticker pattern message ex. ${packageId}:${stickerId}
 		if(text.indexOf(":") != -1) {
 			String[] textArray = text.split(":");
-			return new StickerMessage(textArray[0], textArray[1]);
+			if("w".equals(textArray[0])) {
+				return new StickerMessage(weatherPackageId, weatherStickerMap.get(weatherService.getWeather(textArray[1])));
+			} else {
+				return new StickerMessage(textArray[0], textArray[1]);
+			}
 		}
 		return new TextMessage(event.getMessage().getText());
 	}
