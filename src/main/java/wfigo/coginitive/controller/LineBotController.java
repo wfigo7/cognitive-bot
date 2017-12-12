@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
@@ -42,16 +41,7 @@ public class LineBotController {
 		// sticker pattern message ex. ${packageId}:${stickerId}
 		if(text.indexOf(":") != -1) {
 			String[] textArray = text.split(":");
-			if("w".equals(textArray[0])) {
-				String weather = weatherService.getWeather(textArray[1]);
-				if(!Strings.isNullOrEmpty(weather)) {
-					return new StickerMessage(weatherPackageId, weatherStickerMap.get(weather));
-				} else {
-					return new TextMessage("city not found.");
-				}
-			} else {
-				return new StickerMessage(textArray[0], textArray[1]);
-			}
+			return new StickerMessage(textArray[0], textArray[1]);
 		}
 		return new TextMessage(event.getMessage().getText());
 	}
