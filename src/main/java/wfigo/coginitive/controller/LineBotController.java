@@ -41,7 +41,11 @@ public class LineBotController {
 		// sticker pattern message ex. ${packageId}:${stickerId}
 		if(text.indexOf(":") != -1) {
 			String[] textArray = text.split(":");
-			return new StickerMessage(textArray[0], textArray[1]);
+			if("w".equals(textArray[0])) {
+				return new StickerMessage(weatherPackageId,weatherStickerMap.get( weatherService.getWeather(textArray[1])));
+			} else {
+				return new StickerMessage(textArray[0], textArray[1]);
+			}
 		}
 		return new TextMessage(event.getMessage().getText());
 	}
